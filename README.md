@@ -12,9 +12,7 @@ $$
 U(t)=u+ct-\sum_{i=1}^{N_t}X_i .
 $$
 
-where $u\ge 0$ is the insurer’s initial capital; $c$ is the rate of premium income per unit time; $\{N_t,t\ge 0\}$ denotes the number of claims up to time $t$, which is assumed to be a Poisson process with Poisson rate $\lambda$; and $\{X_i,i=1,2,\ldots\}$ is a sequence of independent and identically distributed positive random variables that are independent of $\{N_t,t\ge 0\}$.
-
-The random variable $\{X_i\}_{i=1}^{\infty}$ represents the amount of the $i$-th claim, which has the distribution function
+where $u\ge 0$ is the insurer’s initial capital; $c$ is the rate of premium income per unit time; $\{N_t,t\ge 0\}$ denotes the number of claims up to time $t$, which is assumed to be a Poisson process with Poisson rate $\lambda$; and $\{X_i,i=1,2,\ldots\}$ is a sequence of independent and identically distributed positive random variables that are independent of $\{N_t,t\ge 0\}$. The random variable $\{X_i\}_{i=1}^{\infty}$ represents the amount of the $i$-th claim, which has the distribution function
 
 $$
 P(x)=1-\bar P(x)=\Pr(X\le x),\qquad x\ge 0,
@@ -67,13 +65,13 @@ $$
 In the classical risk model, the time of ruin is defined as
 
 $$
-T_u=\inf\{t\ge 0:U(t)\le 0\mid U(0)=u\},
+T_u=\inf \{ t\ge 0:U(t)\le 0 \mid U(0)=u \},
 $$
 
 with $T_u=\infty$ if $U(t)\ge 0$ for $t\ge 0$. The finite-time ruin probability is defined as
 
 $$
-\psi(u,t)=\Pr(T_u<t\mid U(0)=u),
+\psi(u,t)=\Pr(T_u < t\mid U(0)=u),
 $$
 
 and the finite-time survival probability is denoted as
@@ -85,11 +83,7 @@ $$
 It is well known that $\phi(u,t)$ satisfies the following PIDE:
 
 $$
-\frac{\partial}{\partial t}\phi(u,t)
-=
-c\frac{\partial}{\partial u}\phi(u,t)
--\lambda \phi(u,t)
-+\lambda\int_0^u \phi(u-x,t)p(x)dx,
+\frac{\partial}{\partial t}\phi(u,t)=c\frac{\partial}{\partial u}\phi(u,t)-\lambda \phi(u,t)+\lambda\int_0^u \phi(u-x,t)p(x)dx,
 $$
 
 with
@@ -100,38 +94,26 @@ $$
 
 ## DNN Methodology
 
-In this section, DNN methodology is introduced and then used to solve Equation $(3)$. The idea of this method is to construct a function $\phi_\theta$ using neural networks that satisfies the original PIDE. More intuitively, $\phi_\theta$ is an approximation of the analytic solution of Equation $(3)$, and it represents a function that is realized by a neural network with parameters $\theta$.
+In this section, DNN methodology is introduced and then used to solve the PIDE above. The idea of this method is to construct a function $\phi_\theta$ using neural networks that satisfies the original PIDE. More intuitively, $\phi_\theta$ is an approximation of the analytic solution of Equation the PIDE above, and it represents a function that is realized by a neural network with parameters $\theta$.
 
 The parameters $\theta$ include weight matrices $W_i$ and bias vectors $b_i$, $i=1,2,\ldots,M$, where $M$ represents the depth of the neural network structure, that is, the number of hidden layers. DNNs give the best approximation of the original function by minimizing the loss function.
 
 Thus, for any $u$ and $t$, the goal is to make the following equation true:
 
 $$
-\frac{\partial}{\partial t}\phi_\theta(u,t)
-=
-c\frac{\partial}{\partial u}\phi_\theta(u,t)
--\lambda \phi_\theta(u,t)
-+\lambda\int_0^u \phi_\theta(u-x,t)p(x)dx.
+\frac{\partial}{\partial t}\phi_\theta(u,t)=c\frac{\partial}{\partial u}\phi_\theta(u,t)-\lambda \phi_\theta(u,t)+\lambda\int_0^u \phi_\theta(u-x,t)p(x)dx.
 $$
 
 For an initialized neural network with initial parameters $\theta$, since the parameters $\theta$ are randomly given, Equation $(4)$ may not hold for every $u$ and $t$. If that is the case, it results in a data error $E_\theta(u,t)$:
 
 $$
-E_\theta(u,t)
-:=
-\frac{\partial}{\partial t}\phi_\theta(u,t)
-+
-\mathcal{N}[u,t,\phi_\theta],
+E_\theta(u,t):=\frac{\partial}{\partial t}\phi_\theta(u,t)+\mathcal{N}[u,t,\phi_\theta],
 $$
 
 where $\mathcal{N}[\cdot]$ is a nonlinear time-dependent differential operator that represents the network function,
 
 $$
-\mathcal{N}[u,t,\phi_\theta]
-=
--c\frac{\partial}{\partial u}\phi_\theta(u,t)
-+\lambda\phi_\theta(u,t)
--\lambda\int_0^u \phi_\theta(u-x,t)p(x)dx.
+\mathcal{N}[u,t,\phi_\theta]=-c\frac{\partial}{\partial u}\phi_\theta(u,t)+\lambda\phi_\theta(u,t)-\lambda\int_0^u \phi_\theta(u-x,t)p(x)dx.
 $$
 
 The aim is to train the neural network to find an optimal parameter $\theta^\ast$. Hence, the error of all training data points should be minimized under the corresponding $\phi_{\theta^\ast}$ of a given parameter.
@@ -151,11 +133,7 @@ where $X$ denotes the collection of the training data. The loss function $L_\the
 ### Mean Square Error of the Data Points Within the Region
 
 $$
-L_\theta^E(X^E)
-:=
-\frac{1}{D_E}
-\sum_{i=1}^{D_E}
-\left|E_\theta(u_i^E,t_i^E)\right|^2,
+L_\theta^E(X^E):=\frac{1}{D_E}\sum_{i=1}^{D_E}\left|E_\theta(u_i^E,t_i^E)\right|^2,
 $$
 
 in a training data set
@@ -168,18 +146,13 @@ $$
 ### Mean Squared Error with Respect to the Initial Condition
 
 $$
-L_\theta^I(X^I)
-:=
-\frac{1}{D_I}
-\sum_{i=1}^{D_I}
-\left|\phi_\theta(u_i^I,t_i^I)-\phi_I(u_i^I)\right|^2,
+L_\theta^I(X^I):=\frac{1}{D_I}\sum_{i=1}^{D_I}\left|\phi_\theta(u_i^I,t_i^I)-\phi_I(u_i^I)\right|^2,
 $$
 
 in a number of points
 
 $$
-X^I:=\{(u_i^I,t_i^I)\}_{i=1}^{N_I}
-\subset [0,\infty)\times\{0\},
+X^I:=\{(u_i^I,t_i^I)\}_{i=1}^{N_I}\subset [0,\infty)\times\{0\},
 $$
 
 where $\phi_\theta$ is the neural network approximation of the solution
@@ -205,18 +178,7 @@ $$
 we have the following discrete form:
 
 $$
-\int_0^u \phi_\theta(u-x,t)p(x)dx
-\approx
-\frac{u}{6N_u}
-\left[
-g_\theta(0,t)
-+
-4\sum_{k=1}^{N_u}g_\theta((2k-1)\delta_u,t)
-+
-2\sum_{k=1}^{N_u-1}g_\theta(2k\delta_u,t)
-+
-g_\theta(u,t)
-\right],
+\int_0^u \phi_\theta(u-x,t)p(x)dx\approx\frac{u}{6N_u}\left[g_\theta(0,t)+4\sum_{k=1}^{N_u}g_\theta((2k-1)\delta_u,t)+2\sum_{k=1}^{N_u-1}g_\theta(2k\delta_u,t)+g_\theta(u,t)\right],
 $$
 
 where
@@ -230,19 +192,5 @@ and $\delta_u>0$ is a given value.
 Then, the network function $\mathcal{N}[u,t,\phi_\theta]$ can be written as
 
 $$
-\mathcal{N}[u,t,\phi_\theta]
-\approx
--c\frac{\partial}{\partial u}\phi_\theta(u,t)
-+\lambda\phi_\theta(u,t)
--\lambda
-\frac{u}{6N_u}
-\left[
-g_\theta(0,t)
-+
-4\sum_{k=1}^{N_u}g_\theta((2k-1)\delta_u,t)
-+
-2\sum_{k=1}^{N_u-1}g_\theta(2k\delta_u,t)
-+
-g_\theta(u,t)
-\right].
+\mathcal{N}[u,t,\phi_\theta]\approx-c\frac{\partial}{\partial u}\phi_\theta(u,t)+\lambda\phi_\theta(u,t)-\lambda\frac{u}{6N_u}\left[g_\theta(0,t)+4\sum_{k=1}^{N_u}g_\theta((2k-1)\delta_u,t)+2\sum_{k=1}^{N_u-1}g_\theta(2k\delta_u,t)+g_\theta(u,t)\right].
 $$

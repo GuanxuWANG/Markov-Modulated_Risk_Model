@@ -65,7 +65,7 @@ $$
 In the classical risk model, the time of ruin is defined as
 
 $$
-T_u=\inf \{ t\ge 0:U(t)\le 0 \mid U(0)=u \},
+T_u=\inf ( t\ge 0:U(t)\le 0 \mid U(0)=u ),
 $$
 
 with $T_u=\infty$ if $U(t)\ge 0$ for $t\ge 0$. The finite-time ruin probability is defined as
@@ -194,3 +194,116 @@ Then, the network function $\mathcal{N}[u,t,\phi_\theta]$ can be written as
 $$
 \mathcal{N}[u,t,\phi_\theta]\approx-c\frac{\partial}{\partial u}\phi_\theta(u,t)+\lambda\phi_\theta(u,t)-\lambda\frac{u}{6N_u}\left[g_\theta(0,t)+4\sum_{k=1}^{N_u}g_\theta((2k-1)\delta_u,t)+2\sum_{k=1}^{N_u-1}g_\theta(2k\delta_u,t)+g_\theta(u,t)\right].
 $$
+
+## Markov-Modulated Risk Model
+
+In the Markov-modulated risk model, the surplus process is affected by an external environmental process, denoted by $\{J(t);t\geq 0\}$. It is assumed that this process is a homogeneous, irreducible, and recurrent Markov process on the finite state space
+
+$$
+\mathcal{E}=\{1,2,\cdots,m\}.
+$$
+
+The process has an intensity matrix
+
+$$
+Q=(q_{ij})_{m\times m},
+$$
+
+where
+
+$$
+q_{ii}:=-q_i,\qquad i\in\mathcal{E}.
+$$
+
+It also has a stationary distribution
+
+$$
+\vec{\pi}=(\pi_1,\pi_2,\cdots,\pi_m).
+$$
+
+Let $N(t)$ denote the number of claims occurring in the time interval $(0,t]$. If $J(s)=i$ for all $s$ in a small interval $(t,t+h]$, then $N(t+h)-N(t)$ represents the number of claims occurring in this interval and follows a Poisson distribution with parameter $\lambda_i>0$. Therefore, the process $\{N(t);t\geq 0\}$ is a Markov-modulated Poisson process. Equivalently, it can be regarded as a Poisson process driven by the external environmental process $\{J(t);t\geq 0\}$.
+
+For $i\in\mathcal{E}$, let $\{U_i(t)\}_{t\geq 0}$ denote the surplus process in the classical risk model with premium rate $c_i$, Poisson intensity $\lambda_i$, and individual claim-size distribution $F_i$. Then the surplus process $\{U(t);t\geq 0\}$ in the Markov-modulated risk model is given by
+
+$$
+U(t)=u+\sum_{i=1}^{m}\int_{0}^{t}I(J(s)=i)dU_i(s),\qquad t\geq 0,
+\qquad (13)
+$$
+
+where $u\geq 0$ is the initial surplus and $I(\cdot)$ denotes the indicator function. The positive loading condition is assumed to hold, namely,
+
+$$
+\sum_{i=1}^{m}\pi_i(c_i-\lambda_i\mu_i)>0.
+$$
+
+According to the semi-Markov model for the Seal-type integral equation proposed by Reinhard et al. (1984) [15], the Markov-modulated risk model corresponding to Equation $(3)$ can be written as
+
+$$
+\frac{\partial}{\partial t}\phi_{ij}(u,t)=c_i\frac{\partial}{\partial u}\phi_{ij}(u,t)-(q_i+\lambda_i)\phi_{ij}(u,t)+\lambda_i\int_{0}^{u}\phi_{ij}(u-x,t)p_i(x)dx+q_i\sum_{k=1}^{m}h_{ik}\phi_{kj}(u,t),
+$$
+
+where the transition probability matrix is
+
+$$
+H=(h_{ij})_{m\times m}.
+$$
+
+## Markov Chain Monte Carlo Simulation
+
+The basic idea of Markov Chain Monte Carlo, or MCMC, simulation is to construct a Markov chain whose stationary distribution is the target distribution. A Markov chain is a mathematical model describing a sequence of random variables in which each variable depends only on the immediately preceding variable. The stationary distribution of a Markov chain is the distribution to which the chain converges after running for a sufficiently long period of time.
+
+First, a target distribution is specified. This is the distribution that we aim to approximate. Then, a Markov chain is constructed such that the target distribution is its stationary distribution. One of the most commonly used methods for constructing such a chain is the Metropolis-Hastings algorithm. This algorithm generates a new proposed state from the current state and then accepts or rejects the proposed state according to a probabilistic acceptance rule. The acceptance rule is designed to ensure that the Markov chain converges to the desired target distribution.
+
+Once the Markov chain has been constructed, it can be used to generate a large number of samples from the target distribution. These samples can then be used to estimate various characteristics of the distribution, such as the mean, variance, or higher-order moments. MCMC simulation is particularly useful when the target distribution is high-dimensional or has a complex structure, making direct sampling by other methods difficult.
+
+The Metropolis-Hastings algorithm is commonly used to generate samples from a given target distribution. The procedure is as follows.
+
+### Step 1: Initialization
+
+Choose an initial state $x_0$.
+
+### Step 2: Generation of a Proposed State
+
+Given the current state $x_t$, generate a new proposed state $x'$ from a proposal distribution
+
+$$
+q(x'\mid x_t).
+$$
+
+### Step 3: Acceptance Probability
+
+Compute the acceptance probability
+
+$$
+\alpha=
+\min\left(
+1,
+\frac{p(x')q(x_t\mid x')}{p(x_t)q(x'\mid x_t)}
+\right).
+$$
+
+Here, $p(x)$ denotes the target distribution, and $q(x'\mid x_t)$ denotes the probability density function of proposing $x'$ given the current state $x_t$.
+
+### Step 4: Acceptance or Rejection
+
+Accept the proposed state $x'$ with probability $\alpha$. With probability $1-\alpha$, reject the proposed state and remain at the current state $x_t$.
+
+### Step 5: State Transition
+
+If the proposed state is accepted, set
+
+$$
+x_{t+1}=x'.
+$$
+
+Otherwise, set
+
+$$
+x_{t+1}=x_t.
+$$
+
+### Step 6: Iteration
+
+Repeat Steps 2 to 5 until the specified number of samples has been generated or until the chain has converged to the target distribution.
+
+Since the acceptance probability $\alpha$ is not always equal to $1$, not every proposed state will be accepted. However, by appropriately adjusting the proposal distribution, the acceptance rate can be made close to approximately $50\%$. This helps the Markov chain explore the state space effectively while maintaining sampling efficiency.
